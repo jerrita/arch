@@ -66,7 +66,8 @@ echo "Changing root passwd..."
 passwd
 
 checker "Install bootloader and other packs"
-pacman -S grub efibootmgr networkmanager network-manager-applet wpa_supplicant openssh git base-devel os-prober sudo
+pacman -S grub efibootmgr networkmanager wpa_supplicant openssh git base-devel os-prober sudo
+systemctl enable NetworkManager
 
 checker "Install grub"
 mkdir /boot/efi
