@@ -12,7 +12,7 @@ timedatectl set-ntp true
 # Disks
 lsblk
 read -p "Input your disk: " diskname
-fdisk $diskname
+cfdisk $diskname
 
 # Format
 checker "Format disk"
