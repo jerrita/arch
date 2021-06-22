@@ -80,6 +80,7 @@ useradd -mG wheel $username
 passwd $username
 
 echo "Now you can modify by yourself and reboot."
+echo "If you install it on real machine, remember install intel_ucode or amd_ucode"
 EOF
 echo "Now you can goto /root and bash nextstep."
 arch-chroot /mnt
