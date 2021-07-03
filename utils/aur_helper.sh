@@ -1,5 +1,7 @@
 if cat /etc/pacman.conf | grep "archlinuxcn" > /dev/null
 then
+echo "Aur repo exists. Exit."
+else
 cat<<EOF>>/etc/pacman.conf
 [archlinuxcn]
 Server = https://mirrors.cqupt.edu.cn/archlinuxcn
