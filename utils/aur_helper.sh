@@ -9,13 +9,5 @@ EOF
 pacman -Syy
 fi
 
-pacman -Syu haveged
-systemctl start haveged
-systemctl enable haveged
-
-rm -fr /etc/pacman.d/gnupg
-pacman-key --init
-pacman-key --populate archlinux
-pacman-key --populate archlinuxcn
-
-pacman -S yay
+git clone https://aur.archlinux.org/yay.git /opt/yay
+cd /opt/yay && makepkg -si
