@@ -17,5 +17,5 @@ fi
 
 sudo pacman -S fakeroot
 sudo git clone https://aur.archlinux.org/yay.git /opt/yay
-sudo chown -R ${whoami}:users /opt/yay
+sudo chown -R `whoami`:users /opt/yay
 cd /opt/yay && makepkg -si
