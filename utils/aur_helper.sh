@@ -1,4 +1,4 @@
-if `whoami` = "root"
+if [ `whoami` = "root" ]
 then
   echo "Please run with non-root user."
   exit
