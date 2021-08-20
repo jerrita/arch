@@ -21,6 +21,8 @@ mkfs.ext4 ${diskname}2
 
 checker "Mount disk"
 mount ${diskname}2 /mnt
+mkdir -p /mnt/boot/efi
+mount ${diskname}1 /mnt/boot/efi
 
 # Install
 checker "Pacstrap system"
@@ -70,8 +72,6 @@ pacman -S grub efibootmgr networkmanager wpa_supplicant openssh git base-devel o
 systemctl enable NetworkManager
 
 checker "Install grub"
-mkdir /boot/efi
-mount ${diskname}1 /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
