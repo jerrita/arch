@@ -24,6 +24,9 @@ mount ${diskname}2 /mnt
 mkdir -p /mnt/boot/efi
 mount ${diskname}1 /mnt/boot/efi
 
+# Update Keyring
+pacman -Sy archlinux-keyring && pacman -Su
+
 # Install
 checker "Pacstrap system"
 sed -i '1iServer = https:\/\/mirrors.cqupt.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
