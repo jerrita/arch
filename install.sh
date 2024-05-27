@@ -25,11 +25,11 @@ mkdir -p /mnt/boot/efi
 mount ${diskname}1 /mnt/boot/efi
 
 # Update Keyring
-pacman -Sy archlinux-keyring && pacman -Su
+# pacman -Sy archlinux-keyring && pacman -Su
 
 # Install
 checker "Pacstrap system"
-sed -i '1iServer = https:\/\/mirrors.cqupt.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
+sed -i '1iServer = https:\/\/mirrors.sustech.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
 vim /etc/pacman.d/mirrorlist
 pacstrap /mnt base linux linux-firmware vim
 
@@ -37,6 +37,10 @@ pacstrap /mnt base linux linux-firmware vim
 checker "Generate fs table"
 genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
+
+# Network
+ip a
+read -p "Input your nic name for DHCP: " nicname
 
 # Change root and install
 checker "Change root and install"
@@ -71,8 +75,19 @@ echo "Changing root passwd..."
 passwd
 
 checker "Install bootloader and other packs"
-pacman -S grub efibootmgr networkmanager wpa_supplicant openssh git base-devel os-prober sudo
-systemctl enable NetworkManager
+pacman -S grub efibootmgr openssh git base-devel os-prober sudo
+
+echo 'Setting ${nicname}...'
+echo '
+[Match]
+Name = ${nicname}
+
+[Network]
+DHCP = yes
+' > /etc/systemd/network/10-wired.network
+
+echo 'Enabling services...'
+systemctl enable sshd systemd-networkd
 
 checker "Install grub"
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
@@ -82,7 +97,10 @@ checker "Create user"
 useradd -mG wheel $username
 passwd $username
 
-echo "Now you can modify by yourself and reboot."
+echo 'Making sudo works...'
+sed -i 's/^# \(%wheel.*NOPASSWD.*\)/\1/' /etc/sudoers
+
+echo "Now you can modify yourself and reboot."
 echo "If you install it on real machine, remember install intel-ucode or amd-ucode"
 EOF
 echo "Now you can goto /root and bash nextstep."
