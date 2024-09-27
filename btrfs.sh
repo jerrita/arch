@@ -18,8 +18,8 @@ cfdisk $diskname
 
 # Format
 checker "Format & Mount disk"
-mkfs.vfat -n boot ${diskname}p1
-mkfs.btrfs -L arch-btrfs ${diskname}p2
+mkfs.vfat -n BOOT ${diskname}p1
+mkfs.btrfs -L arch-btrfs ${diskname}p2 -f
 
 echo "=> Creating subvols..."
 mount --mkdir ${diskname}p2 /tmp/btrfs-full
@@ -47,7 +47,7 @@ mount ${diskname}p1 /mnt/boot/efi
 checker "Pacstrap system"
 sed -i '1iServer = https:\/\/mirrors.sustech.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
 vim /etc/pacman.d/mirrorlist
-pacstrap /mnt base linux linux-firmware vim btrfs-prog
+pacstrap /mnt base linux linux-firmware vim btrfs-progs
 
 read -p "Input extra packages you want to install (e.g. intel-ucode): " extras
 
