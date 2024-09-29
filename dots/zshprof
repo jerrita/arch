@@ -1,0 +1,45 @@
+#!/usr/bin/bash
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+function set_wayland_env
+{
+    export LANG=zh_CN.UTF-8
+    export LC_ALL=C
+    export QT_AUTO_SCREEN_SCALE_FACTOR=1
+    export QT_QPA_PLATFORM="wayland;xcb"
+    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+    # 使用qt5ct软件配置QT程序外观
+    export QT_QPA_PLATFORMTHEME=qt5ct
+
+    # 一些游戏使用wayland
+    export SDL_VIDEODRIVER=wayland
+    export _JAVA_AWT_WM_NONEREPARENTING=1
+    export GDK_BACKEND="wayland"
+}
+
+function hss
+{
+    set_wayland_env
+    export XDG_SESSION_TYPE=wayland
+    export XDG_SESSION_DESKTOP=Hyprland
+    export XDG_CURRENT_DESKTOP=Hyprland
+    cd ~/ && Hyprland
+}
+
+alias vim=nvim
+alias cd=z
+alias lg=lazygit
+alias s="kitten ssh"
+alias ssh="kitten ssh"
+alias conda='micromamba'
+
+export MAMBA_ROOT_PREFIX=/home/jerrita/.micromamba
+eval "$(micromamba shell hook --shell zsh)"
