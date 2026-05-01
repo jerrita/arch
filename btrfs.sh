@@ -25,20 +25,18 @@ echo "=> Creating subvols..."
 mount --mkdir ${diskname}p2 /tmp/btrfs-full
 btrfs subvol create /tmp/btrfs-full/@
 btrfs subvol create /tmp/btrfs-full/@home
-btrfs subvol create /tmp/btrfs-full/@swap
-btrfs subvol create /tmp/btrfs-full/@var-tmp
-btrfs subvol create /tmp/btrfs-full/@var-cache
-chattr +C /tmp/btrfs-full/@swap
-chattr +C /tmp/btrfs-full/@var-cache
+btrfs subvol create /tmp/btrfs-full/@var_log
+btrfs subvol create /tmp/btrfs-full/@cache
+btrfs subvol create /tmp/btrfs-full/@snapshots
 umount /tmp/btrfs-full
-echo "=> Mounting..."
-mount --mkdir ${diskname}p2 -o subvol=@ /mnt
-mount --mkdir ${diskname}p2 -o subvol=@home /mnt/home
-mount --mkdir ${diskname}p2 -o subvol=@swap /mnt/swap
-mount --mkdir ${diskname}p2 -o subvol=@var-tmp /mnt/var/tmp
-mount --mkdir ${diskname}p2 -o subvol=@var-cache /mnt/var/cache
+echo "=> Mounting subvols..."
+mount --mkdir ${diskname}p2 -o rw,noatime,compress=zstd,subvol=@ /mnt
+mount --mkdir ${diskname}p2 -o rw,noatime,compress=zstd,subvol=@home /mnt/home
+mount --mkdir ${diskname}p2 -o rw,noatime,subvol=@var_log /mnt/var/log
+mount --mkdir ${diskname}p2 -o rw,noatime,subvol=@cache /mnt/var/cache
+mount --mkdir ${diskname}p2 -o rw,noatime,subvol=@snapshots /mnt/.snapshots
 mkdir -p /mnt/boot/efi
-mount ${diskname}p1 /mnt/boot/efi
+mount -t vfat ${diskname}p1 /mnt/boot/efi
 
 # Update Keyring
 # pacman -Sy archlinux-keyring && pacman -Su
@@ -106,7 +104,7 @@ DHCP = yes
 ' > /etc/systemd/network/10-wired.network
 
 echo 'Enabling services...'
-systemctl enable sshd systemd-networkd
+systemctl enable sshd systemd-networkd fstrim.timer
 
 checker "Install grub"
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Arch
