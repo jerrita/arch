@@ -22,12 +22,15 @@ checker "Mount disk"
 mount ${diskname}1 /mnt
 
 # Update Keyring
-# pacman -Sy archlinux-keyring && pacman -Su
+pacman-key --init
+pacman-key --populate
 
 # Install
 checker "Pacstrap system"
 sed -i '1iServer = http:\/\/mirrors.sustech.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
 vim /etc/pacman.d/mirrorlist
+pacman -Sy archlinux-keyring && pacman -Su
+
 pacstrap /mnt base linux vim
 
 # Localize
