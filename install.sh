@@ -14,22 +14,19 @@ lsblk
 read -p "Input your disk: " diskname
 cfdisk $diskname
 
-# Format
+# Format (BIOS/MBR: single ext4 partition)
 checker "Format disk"
-mkfs.vfat ${diskname}1
-mkfs.ext4 ${diskname}2
+mkfs.ext4 ${diskname}1
 
 checker "Mount disk"
-mount ${diskname}2 /mnt
-mkdir -p /mnt/boot/efi
-mount ${diskname}1 /mnt/boot/efi
+mount ${diskname}1 /mnt
 
 # Update Keyring
 # pacman -Sy archlinux-keyring && pacman -Su
 
 # Install
 checker "Pacstrap system"
-sed -i '1iServer = https:\/\/mirrors.sustech.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
+sed -i '1iServer = http:\/\/mirrors.sustech.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
 vim /etc/pacman.d/mirrorlist
 pacstrap /mnt base linux vim
 
@@ -38,9 +35,8 @@ checker "Generate fs table"
 genfstab -U /mnt >> /mnt/etc/fstab
 cat /mnt/etc/fstab
 
-# Network
-ip a
-read -p "Input your nic name for DHCP: " nicname
+# Network (dhcp on all interfaces)
+# ip a
 
 # Change root and install
 checker "Change root and install"
@@ -75,22 +71,22 @@ echo "Changing root passwd..."
 passwd
 
 checker "Install bootloader and other packs"
-pacman -S grub efibootmgr openssh git base-devel os-prober sudo
-
-echo 'Setting ${nicname}...'
-echo '
-[Match]
-Name = ${nicname}
-
-[Network]
-DHCP = yes
-' > /etc/systemd/network/10-wired.network
+pacman -S grub openssh git sudo qemu-guest-agent
 
 echo 'Enabling services...'
-systemctl enable sshd systemd-networkd
+systemctl enable sshd systemd-networkd qemu-guest-agent
+
+echo 'Setting up DHCP on all interfaces...'
+cat > /etc/systemd/network/90-dhcp.network <<EOF
+[Match]
+Name=*
+
+[Network]
+DHCP=yes
+EOF
 
 checker "Install grub"
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-install --target=i386-pc ${diskname}
 grub-mkconfig -o /boot/grub/grub.cfg
 
 checker "Create user"
@@ -101,8 +97,6 @@ echo 'Making sudo works...'
 sed -i 's/^# \(%wheel.*NOPASSWD.*\)/\1/' /etc/sudoers
 
 echo "Now you can modify yourself and reboot."
-echo "If you install it on real machine, remember install intel-ucode or amd-ucode"
-echo "and linux-firmware you needed"
 EOF
 echo "Now you can goto /root and bash nextstep."
 arch-chroot /mnt
