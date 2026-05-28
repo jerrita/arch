@@ -89,7 +89,7 @@ DHCP=yes
 EOF
 
 checker "Install grub"
-grub-install --target=i386-pc ${diskname}
+grub-install --target=i386-pc --boot-directory=/boot ${diskname}
 grub-mkconfig -o /boot/grub/grub.cfg
 
 checker "Create user"
@@ -101,5 +101,6 @@ sed -i 's/^# \(%wheel.*NOPASSWD.*\)/\1/' /etc/sudoers
 
 echo "Now you can modify yourself and reboot."
 EOF
+
 echo "Now you can goto /root and bash nextstep."
 arch-chroot /mnt
