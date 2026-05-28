@@ -80,16 +80,16 @@ echo 'Enabling services...'
 systemctl enable sshd systemd-networkd qemu-guest-agent
 
 echo 'Setting up DHCP on all interfaces...'
-cat > /etc/systemd/network/90-dhcp.network <<EOF
+cat > /etc/systemd/network/20-wired.network <<NETEOF
 [Match]
 Name=*
 
 [Network]
 DHCP=yes
-EOF
+NETEOF
 
 checker "Install grub"
-grub-install --target=i386-pc --boot-directory=/boot ${diskname}
+grub-install --target=i386-pc ${diskname}
 grub-mkconfig -o /boot/grub/grub.cfg
 
 checker "Create user"
