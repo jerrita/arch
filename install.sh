@@ -31,7 +31,7 @@ mount ${diskname}1 /mnt/boot/efi
 checker "Pacstrap system"
 sed -i '1iServer = https:\/\/mirrors.sustech.edu.cn\/archlinux\/$repo\/os\/$arch' /etc/pacman.d/mirrorlist
 vim /etc/pacman.d/mirrorlist
-pacstrap /mnt base linux linux-firmware vim
+pacstrap /mnt base linux vim
 
 # Localize
 checker "Generate fs table"
@@ -102,6 +102,7 @@ sed -i 's/^# \(%wheel.*NOPASSWD.*\)/\1/' /etc/sudoers
 
 echo "Now you can modify yourself and reboot."
 echo "If you install it on real machine, remember install intel-ucode or amd-ucode"
+echo "and linux-firmware you needed"
 EOF
 echo "Now you can goto /root and bash nextstep."
 arch-chroot /mnt
